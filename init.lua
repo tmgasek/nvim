@@ -111,8 +111,8 @@ vim.opt.timeoutlen = 300
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 vim.o.termguicolors = true
-vim.opt.list = true
-vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+-- vim.opt.list = true
+-- vim.opt.listchars = { trail = '·', nbsp = '␣' }
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = 'split'
 vim.opt.cursorline = true
@@ -581,6 +581,7 @@ require('lazy').setup {
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
         javascript = { { 'prettierd', 'prettier' } },
+        typescript = { { 'prettierd', 'prettier' } },
       },
     },
   },
@@ -898,6 +899,38 @@ require('lazy').setup {
       },
     },
   },
+  -- {
+  --   'ggandor/leap.nvim',
+  --   opts = {},
+  --   config = function()
+  --     require('leap').create_default_mappings()
+  --   end,
+  -- },
+  {
+    'folke/flash.nvim',
+    event = 'VeryLazy',
+    ---@type Flash.Config
+    opts = {},
+  -- stylua: ignore
+  keys = {
+    { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
+    { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+    { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
+    { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+    { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
+  },
+  },
+  { 'akinsho/toggleterm.nvim', version = '*', config = true },
+}
+
+local parser_config = require('nvim-treesitter.parsers').get_parser_configs()
+parser_config.gotmpl = {
+  install_info = {
+    url = 'https://github.com/ngalaiko/tree-sitter-go-template',
+    files = { 'src/parser.c' },
+  },
+  filetype = 'gotmpl',
+  used_by = { 'gohtmltmpl', 'gotexttmpl', 'gotmpl', 'yaml', 'tmpl' },
 }
 
 -- The line beneath this is called `modeline`. See `:help modeline`
@@ -911,6 +944,27 @@ function ToggleBackgroundTheme()
   end
 end
 
+-- ToggleTerm
+require('toggleterm').setup {}
+vim.keymap.set('n', '<M-t>', '<cmd>ToggleTerm<CR>')
+function _G.set_terminal_keymaps()
+  local opts = { buffer = 0 }
+  vim.keymap.set('t', '<esc>', [[<C-\><C-n>]], opts)
+  vim.keymap.set('t', 'jk', [[<C-\><C-n>]], opts)
+  vim.keymap.set('t', '<C-h>', [[<Cmd>wincmd h<CR>]], opts)
+  vim.keymap.set('t', '<C-j>', [[<Cmd>wincmd j<CR>]], opts)
+  vim.keymap.set('t', '<C-k>', [[<Cmd>wincmd k<CR>]], opts)
+  vim.keymap.set('t', '<C-l>', [[<Cmd>wincmd l<CR>]], opts)
+  vim.keymap.set('t', '<C-w>', [[<C-\><C-n><C-w>]], opts)
+  vim.keymap.set('t', '<M-t>', '<cmd>ToggleTerm<CR>', opts)
+end
+-- if you only want these mappings for toggle term use term://*toggleterm#* instead
+vim.cmd 'autocmd! TermOpen term://* lua set_terminal_keymaps()'
+
 vim.keymap.set('n', '<F10>', '<cmd>lua ToggleBackgroundTheme()<cr>')
 
 vim.keymap.set('n', '-', require('oil').open, { desc = 'Open parent directory' })
+
+vim.keymap.set('n', '<leader>zz', '<cmd>NoNeckPain<CR>', silent)
+vim.keymap.set('n', '<leader>z+', '<cmd>NoNeckPainWidthUp<CR>', silent)
+vim.keymap.set('n', '<leader>z-', '<cmd>NoNeckPainWidthDown<CR>', silent)
